@@ -1,0 +1,24 @@
+# Container state
+.container-home/
+Containerfile.dev
+
+# Hugo build output
+site/public/
+site/resources/
+site/.hugo_build.lock
+
+# Claude Code
+.claude/
+
+# OS junk
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+
+# Editor
+.idea/
+.vscode/
+*.sublime-*
+docs/plans/

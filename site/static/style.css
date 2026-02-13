@@ -1,0 +1,100 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background: #fafafa;
+  color: #1a1a1a;
+}
+
+h1 { font-size: 2.5rem; margin-bottom: 0.25rem; }
+h2 { font-size: 1.4rem; margin: 2rem 0 0.75rem; }
+h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+
+header { text-align: center; margin-bottom: 2rem; }
+.tagline { font-size: 1.15rem; color: #444; }
+
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9em;
+  background: #f0f0f0;
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+}
+
+pre {
+  background: #f0f0f0;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.5rem 0 1rem;
+}
+
+pre code { background: none; padding: 0; }
+
+ul, ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+li { margin-bottom: 0.4rem; }
+
+.install-block { margin-bottom: 1rem; }
+
+.toggle-btn {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: inherit;
+}
+
+.toggle-btn:hover { border-color: #888; }
+
+footer {
+  margin-top: 3rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+footer a { color: inherit; }
+
+.table-wrapper { overflow-x: auto; margin: 0.75rem 0 1rem; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #ddd;
+}
+
+th { font-weight: 600; }
+
+tr:first-child td { font-weight: 600; }
+
+.callout {
+  border: 2px solid #1a1a1a;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 2rem;
+}
+
+section { margin-bottom: 1.5rem; }
+
+@media (prefers-color-scheme: dark) {
+  body { background: #1a1a1a; color: #e0e0e0; }
+  .tagline { color: #aaa; }
+  code, pre { background: #2a2a2a; }
+  .toggle-btn { border-color: #555; }
+  .toggle-btn:hover { border-color: #888; }
+  th, td { border-bottom-color: #333; }
+  .callout { border-color: #e0e0e0; }
+  footer { color: #888; }
+}

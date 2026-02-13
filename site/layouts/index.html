@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>entersh — Dev containers for AI coding agents</title>
+  <link rel="stylesheet" href="{{ "style.css" | relURL }}">
+</head>
+<body>
+  <!-- Hero -->
+  <header>
+    <h1>entersh</h1>
+    <p class="tagline">Dev containers for AI coding agents.<br>One script. No YAML. No Compose.</p>
+  </header>
+
+  <main>
+    <!-- Install section with OS detection -->
+    <section id="install">
+      <h2>Quick start</h2>
+      <div id="install-linux" class="install-block">
+        <h3>Linux</h3>
+        <pre><code>curl -fsSL https://github.com/entershdev/entersh/releases/latest/download/enter.sh -o enter.sh
+chmod +x enter.sh
+./enter.sh</code></pre>
+      </div>
+      <div id="install-mac" class="install-block">
+        <h3>macOS / Windows (WSL2)</h3>
+        <pre><code>curl -fsSL https://github.com/entershdev/entersh/releases/latest/download/enter-machine.sh -o enter.sh
+chmod +x enter.sh
+./enter.sh</code></pre>
+      </div>
+      <button id="toggle-os" class="toggle-btn">Show other OS</button>
+      <p>On first run, a default <code>Containerfile.dev</code> is generated. Add your project env and agent:</p>
+      <pre><code># Add your language/runtime
+RUN dnf install -y golang nodejs python3 ...
+
+# Install your AI coding agent
+RUN npm install -g @anthropic-ai/claude-code   # Claude Code
+# RUN curl -fsSL https://opencode.ai/install | bash  # Opencode
+# RUN npm install -g @anthropic-ai/amp               # Amp</code></pre>
+      <p>Then rebuild: <code>./enter.sh --rebuild</code></p>
+    </section>
+
+    <!-- Why containers -->
+    <section>
+      <h2>Why containers for agents?</h2>
+      <ul>
+        <li><strong>Isolation</strong> — agents can't damage your host. If something breaks, destroy and recreate.</li>
+        <li><strong>Reproducibility</strong> — same environment everywhere. The Containerfile is the source of truth.</li>
+        <li><strong>Simplicity</strong> — one script, not a platform. No Docker Compose, no Kubernetes.</li>
+      </ul>
+    </section>
+
+    <!-- Why Podman -->
+    <section>
+      <h2>Why Podman?</h2>
+      <ul>
+        <li><strong>Rootless by default</strong> — no daemon running as root, no Docker Desktop license issues.</li>
+        <li><strong>File permissions work</strong> — <code>--userns=keep-id</code> maps your UID into the container.</li>
+        <li><strong>Daemonless</strong> — each container is its own process.</li>
+        <li><strong>Nested containers</strong> — run <code>podman</code>, testcontainers, or <code>podman-compose</code> from inside the container. No Docker-in-Docker hacks.</li>
+      </ul>
+      <p>entersh requires Podman. It is not Docker-compatible.</p>
+    </section>
+
+    <!-- Why entersh -->
+    <section>
+      <h2>Why entersh?</h2>
+      <p>entersh is designed for one thing: giving AI coding agents a safe, reproducible place to work. It's a single shell script you drop into a project &mdash; no config language to learn, no platform to install, no YAML to maintain. The folder name is the container name. First run generates a <code>Containerfile.dev</code> if you don't have one. Security hardening is on by default (<code>--cap-drop=all</code>, <code>--read-only</code>, <code>--no-new-privileges</code>). That's it.</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Approach</th>
+              <th>Agent isolation</th>
+              <th>Config complexity</th>
+              <th>Nested containers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>entersh</strong></td>
+              <td>Rootless Podman container</td>
+              <td>Strong (secure defaults)</td>
+              <td>Zero config (one script)</td>
+              <td>Yes (Podman socket)</td>
+            </tr>
+            <tr>
+              <td>Distrobox</td>
+              <td>Host-integrated container</td>
+              <td>None (shares $HOME)</td>
+              <td>Minimal</td>
+              <td>Via host-exec</td>
+            </tr>
+            <tr>
+              <td>Dev Containers</td>
+              <td>Docker container + JSON spec</td>
+              <td>Good (needs hardening)</td>
+              <td>Medium (devcontainer.json)</td>
+              <td>Yes (DinD feature)</td>
+            </tr>
+            <tr>
+              <td>Docker Compose</td>
+              <td>Multi-container orchestration</td>
+              <td>Moderate</td>
+              <td>Medium (compose.yaml)</td>
+              <td>Requires privileges</td>
+            </tr>
+            <tr>
+              <td>devenv</td>
+              <td>Nix shell environments</td>
+              <td>None (no container)</td>
+              <td>Medium (Nix language)</td>
+              <td>N/A</td>
+            </tr>
+            <tr>
+              <td>Vagrant</td>
+              <td>Full VM</td>
+              <td>Strongest</td>
+              <td>Medium (Vagrantfile)</td>
+              <td>Yes (full kernel)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li><strong>Distrobox</strong> shares your entire <code>$HOME</code> by design &mdash; great for GUI apps, wrong for untrusted agents.</li>
+        <li><strong>Dev Containers</strong> are the closest alternative but require a JSON spec, a supporting editor/CLI, and manual security hardening.</li>
+        <li><strong>Docker Compose</strong> is a service orchestrator, not a dev environment tool &mdash; you build the sandbox yourself.</li>
+        <li><strong>devenv/Nix</strong> solve reproducibility brilliantly but provide zero runtime isolation.</li>
+        <li><strong>Vagrant</strong> has the strongest isolation (full VM) but boots in 30-90s and needs gigabytes of RAM.</li>
+      </ul>
+    </section>
+
+    <!-- How it works -->
+    <section>
+      <h2>How it works</h2>
+      <ol>
+        <li>Drop <code>enter.sh</code> into your project</li>
+        <li>Run it — a <code>Containerfile.dev</code> is generated if one doesn't exist</li>
+        <li>The image is built and a container is created automatically</li>
+        <li>On subsequent runs, it attaches to the existing container</li>
+        <li>Use <code>--force</code> to recreate, <code>--rebuild</code> to rebuild the image, <code>--verbose</code> for full output</li>
+      </ol>
+      <p>The container name matches your project folder name.</p>
+    </section>
+
+    <!-- Agent-first callout -->
+    <section class="callout">
+      <h2>Agent-first by design</h2>
+      <p>The scripts are written to be read and modified by AI coding agents. Every section has comments explaining what it does and how to extend it. <strong>Just ask your agent to update <code>enter.sh</code> and <code>Containerfile.dev</code> for your project &mdash; it will know what to do.</strong></p>
+    </section>
+  </main>
+
+  <footer>
+    <p><a href="https://github.com/entershdev/entersh">GitHub</a> · MIT License</p>
+  </footer>
+
+  <script>
+  (function() {
+    var platform = navigator.platform.toLowerCase();
+    var linuxBlock = document.getElementById('install-linux');
+    var macBlock = document.getElementById('install-mac');
+    var toggleBtn = document.getElementById('toggle-os');
+    var showingAll = false;
+
+    if (platform.indexOf('linux') !== -1) {
+      macBlock.style.display = 'none';
+    } else {
+      linuxBlock.style.display = 'none';
+    }
+
+    toggleBtn.addEventListener('click', function() {
+      if (showingAll) {
+        if (platform.indexOf('linux') !== -1) {
+          macBlock.style.display = 'none';
+        } else {
+          linuxBlock.style.display = 'none';
+        }
+        toggleBtn.textContent = 'Show other OS';
+      } else {
+        linuxBlock.style.display = '';
+        macBlock.style.display = '';
+        toggleBtn.textContent = 'Show my OS only';
+      }
+      showingAll = !showingAll;
+    });
+  })();
+  </script>
+</body>
+</html>
