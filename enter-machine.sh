@@ -76,7 +76,7 @@
 # - Fixed container user "dev" (UID 1000) - --userns=keep-id is unreliable through VM layer
 # - Port forwarding (-p) instead of --network=host (VM network is not the host)
 # - No SELinux flags (not applicable on Mac/Windows)
-# - Podman socket from VM at /run/podman/podman.sock
+# - Podman socket from VM (auto-detected via podman info)
 # - --security-opt no-new-privileges: prevents privilege escalation
 # - --cap-drop=all: drops all Linux capabilities (agents don't need them)
 # - --read-only: root filesystem is read-only (writes only to mounted volumes and /tmp)
@@ -190,8 +190,11 @@ IMAGE_NAME="${PROJECT_NAME}-dev"
 CONTAINER_NAME="$PROJECT_NAME"
 CONTAINER_USER="dev"
 
-# Socket path inside the podman machine VM
-PODMAN_SOCK="/run/podman/podman.sock"
+# Socket path inside the podman machine VM (detect from podman info)
+PODMAN_SOCK="$(podman info --format '{{.Host.RemoteSocket.Path}}' 2>/dev/null | sed 's|^unix://||')"
+if [ -z "$PODMAN_SOCK" ]; then
+  PODMAN_SOCK="/run/podman/podman.sock"
+fi
 
 # --- Ensure podman machine is running ---
 if ! podman machine inspect 2>/dev/null | grep -q '"State": "running"'; then
